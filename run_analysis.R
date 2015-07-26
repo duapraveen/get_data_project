@@ -23,14 +23,15 @@ comboDF <- rbind(testfeatures, trainfeatures)
 # Step 2 : keep only the mean and std  columns (and subject and activity record identifiers)
 mn <- grep("mean",names(comboDF))
 std <- grep("std",names(comboDF))
-subsetDF[,c(std, mn, 562, 563)] 
+subsetDF <- comboDF[,c(std, mn, 562, 563)] 
 
 # Step 3 : Use descriptive activity names (add a column "activitydescr" which is descriptive activity name)
 subsetDF <- mutate(subsetDF, activitydescr = factor(activity, labels = activitynames$V2))
+subsetDF <- select(subsetDF, -activity)
 
 # Step 4 : label the dataset with descriptive cariable names
 # already done above with colnames(trainfeatures) and colnames(testfeatures) <- featurenames$V2 prior to merge
 
-
-
-
+# Step 5 : create a tidy dataset with averages for each variable in step 4 for activity and subject
+tidyDF <- ddply(subsetDF, .(subject, activitydescr), colwise(mean))
+write.table(tidyDF, file="tidyDF.txt", row.names = FALSE)
